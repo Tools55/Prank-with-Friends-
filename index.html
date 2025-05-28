@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funny Tools - Prank Palace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <style>
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scale-in {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        .animate-scale-in {
+            animation: scale-in 0.3s ease-out forwards;
+        }
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+            40%, 43% { transform: translate3d(0,-30px,0); }
+            70% { transform: translate3d(0,-15px,0); }
+            90% { transform: translate3d(0,-4px,0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 min-h-screen">
+    
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4">🎭</div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2" id="auth-title">Welcome Back!</h1>
+                <p class="text-gray-600" id="auth-subtitle">Log in to access hilarious prank tools</p>
+            </div>
+
+            <form id="auth-form" class="space-y-6">
+                <div id="fullname-field" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input id="fullname" type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="Enter your full name">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input id="email" type="email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="Enter your email">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input id="password" type="password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="Enter your password" minlength="6">
+                </div>
+
+                <button type="submit" id="auth-button" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 rounded-lg transition-all transform hover:scale-105">
+                    Log In
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <button id="toggle-auth" class="text-purple-600 hover:text-purple-800 font-medium transition-colors">
+                    Don't have an account? Sign up
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="main-screen" class="hidden min-h-screen">
+        <!-- Header with user info and logout -->
+        <div class="flex justify-between items-center p-4">
+            <div class="flex items-center gap-2 text-white">
+                <span class="text-2xl">👤</span>
+                <span class="text-sm" id="user-email">Welcome, user@example.com</span>
+            </div>
+            <button id="logout-btn" class="bg-white/20 border border-white/30 text-white hover:bg-white/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                <span class="text-sm">🚪</span>
+                Logout
+            </button>
+        </div>
+
+        <!-- Header -->
+        <header class="text-center py-8 px-4">
+            <div class="animate-bounce">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+                    🎭 Funny Tools
+                </h1>
+            </div>
+            <p class="text-xl md:text-2xl text-white/90 mb-2 font-medium">
+                The Ultimate Collection of Hilarious Prank Tools!
+            </p>
+            <p class="text-lg text-white/80 max-w-2xl mx-auto">
+                Warning: May cause uncontrollable laughter, confusion, and temporary loss of productivity 😂
+            </p>
+        </header>
+
+        <!-- Tools Grid -->
+        <main class="container mx-auto px-4 pb-12">
+            <div id="tools-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Tools will be populated here -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center py-8 text-white/70">
+            <p class="text-lg">Made with 💖 and lots of ☕ for maximum chaos!</p>
+            <p class="text-sm mt-2">© 2024 Funny Tools - Spreading Laughter One Prank at a Time</p>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div id="tool-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-t-3xl relative">
+                <button id="close-modal" class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors">
+                    <span class="text-2xl">✕</span>
+                </button>
+                <div class="text-center">
+                    <div id="modal-emoji" class="text-8xl mb-4">🎭</div>
+                    <h2 id="modal-title" class="text-3xl font-bold mb-2">Tool Title</h2>
+                    <p id="modal-description" class="text-white/90">Tool description</p>
+                </div>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6">
+                <div id="modal-content" class="mb-6 min-h-[200px]">
+                    <div class="text-center py-12">
+                        <p class="text-gray-600 mb-4">Click the button below to activate this tool!</p>
+                        <div class="text-6xl">🎭</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4 justify-center">
+                    <button id="activate-btn" class="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white px-8 py-3 rounded-full font-semibold text-lg transform hover:scale-105 transition-all duration-200 shadow-lg">
+                        🚀 Activate Tool
+                    </button>
+                    <button id="reset-btn" class="hidden bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white px-8 py-3 rounded-full font-semibold text-lg transform hover:scale-105 transition-all duration-200 shadow-lg">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funny Tools Data
+        const funnyTools = [
+            {
+                id: 'fake-chat',
+                emoji: '💬',
+                title: 'Fake Chat Generator',
+                description: 'Create realistic fake chat conversations to prank your friends!',
+                category: 'social'
+            },
+            {
+                id: 'fake-call',
+                emoji: '📞',
+                title: 'Fake Call Generator',
+                description: 'Generate fake incoming calls to escape awkward situations!',
+                category: 'social'
+            },
+            {
+                id: 'auto-screaming',
+                emoji: '😱',
+                title: 'Auto Screaming Page',
+                description: 'A page that screams at random intervals. Perfect for pranks!',
+                category: 'sound'
+            },
+            {
+                id: 'cant-touch-button',
+                emoji: '🏃‍♂️',
+                title: "Can't Touch This Button",
+                description: 'A button that runs away every time you try to click it!',
+                category: 'interactive'
+            },
+            {
+                id: 'real-villain',
+                emoji: '🦹‍♀️',
+                title: "Who's the Real Villain?",
+                description: 'Discover your inner villain with this totally scientific quiz!',
+                category: 'quiz'
+            },
+            {
+                id: 'bollywood-poster',
+                emoji: '🎬',
+                title: 'Bollywood Poster Generator',
+                description: 'Create your own dramatic Bollywood movie poster!',
+                category: 'generator'
+            },
+            {
+                id: 'does-nothing',
+                emoji: '🚫',
+                title: 'This Button Does Nothing',
+                description: 'Exactly what it says. But people will still click it!',
+                category: 'useless'
+            },
+            {
+                id: 'typing-ghost',
+                emoji: '👻',
+                title: 'Typing Ghost',
+                description: 'A ghost that types spooky messages on your screen!',
+                category: 'spooky'
+            }
+        ];
+
+        // Tool Functionality
+        const toolFunctionality = {
+            'fake-chat': {
+                execute: () => {
+                    const content = document.getElementById('modal-content');
+                    content.innerHTML = `
+                        <div class="max-w-sm mx-auto bg-black rounded-3xl p-4 font-sans">
+                            <!-- Phone Header -->
+                            <div class="bg-gray-900 text-white p-3 rounded-t-xl flex items-center gap-3">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-sm font-bold">M</div>
+                                <div class="flex-1">
+                                    <div class="font-semibold">Mom</div>
+                                    <div class="text-xs text-gray-400">Online now</div>
+                                </div>
+                                <div class="text-xs text-gray-400">📞 📹</div>
+                            </div>
+                            
+                            <!-- Chat Messages -->
+                            <div id="chat-messages" class="bg-gray-100 p-3 space-y-3 min-h-[250px] max-h-[250px] overflow-y-auto">
+                                <div class="flex">
+                                    <div class="bg-gray-300 text-black p-2 rounded-lg max-w-[70%]">
+                                        <p class="text-sm">Where are you? 😡</p>
+                                        <span class="text-xs text-gray-600">2:30 PM</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end">
+                                    <div class="bg-blue-500 text-white p-2 rounded-lg max-w-[70%]">
+                                        <p class="text-sm">On my way home! 😅</p>
+                                        <span class="text-xs text-blue-200">2:32 PM ✓✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Input Section -->
+                            <div class="bg-gray-200 p-3 rounded-b-xl">
+                                <div class="flex gap-2">
+                                    <input type="text" id="message-input" placeholder="Type a message..." class="flex-1 p-2 rounded-full border text-black text-sm">
+                                    <button id="send-btn" class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold">Send</button>
+                                </div>
+                                <div class="mt-2 text-center">
+                                    <label class="text-xs text-gray-600 mr-2">Sender:</label>
+                                    <select id="sender-select" class="text-xs p-1 rounded text-black">
+                                        <option value="me">Me</option>
+                                        <option value="other">Mom</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add event listeners for chat functionality
+                    setTimeout(() => {
+                        const messageInput = document.getElementById('message-input');
+                        const sendBtn = document.getElementById('send-btn');
+                        const senderSelect = document.getElementById('sender-select');
+                        const chatMessages = document.getElementById('chat-messages');
+                        
+                        const sendMessage = () => {
+                            const message = messageInput.value.trim();
+                            if (!message) return;
+                            
+                            const isMe = senderSelect.value === 'me';
+                            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                            
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = isMe ? 'flex justify-end' : 'flex';
+                            messageDiv.innerHTML = `
+                                <div class="${isMe ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'} p-2 rounded-lg max-w-[70%]">
+                                    <p class="text-sm">${message}</p>
+                                    <span class="text-xs ${isMe ? 'text-blue-200' : 'text-gray-600'}">${time} ${isMe ? '✓✓' : ''}</span>
+                                </div>
+                            `;
+                            
+                            chatMessages.appendChild(messageDiv);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                            messageInput.value = '';
+                        };
+                        
+                        sendBtn.addEventListener('click', sendMessage);
+                        messageInput.addEventListener('keypress', (e) => {
+                            if (e.key === 'Enter') sendMessage();
+                        });
+                    }, 100);
+                }
+            },
+            'fake-call': {
+                execute: () => {
+                    const content = document.getElementById('modal-content');
+                    content.innerHTML = `
+                        <div class="max-w-sm mx-auto bg-black rounded-3xl p-6 text-white relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-b from-blue-900 to-purple-900 opacity-50"></div>
+                            <div class="relative z-10 text-center">
+                                <div class="text-sm text-gray-300 mb-2">Incoming call...</div>
+                                <div class="w-32 h-32 bg-gray-600 rounded-full mx-auto mb-4 flex items-center justify-center text-6xl">👤</div>
+                                <h3 class="text-2xl font-bold mb-1">Boss 😈</h3>
+                                <p class="text-gray-300 mb-8">Mobile +1 (555) 123-4567</p>
+                                
+                                <div class="flex justify-between items-center px-8">
+                                    <button id="decline-call" class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-2xl">📞</button>
+                                    <button id="accept-call" class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-2xl">📞</button>
+                                </div>
+                                
+                                <div class="mt-6 flex justify-center gap-4">
+                                    <button class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">💬</button>
+                                    <button class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">⏰</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        document.getElementById('decline-call').addEventListener('click', () => {
+                            alert('Call declined! 😅 Perfect excuse activated!');
+                        });
+                        document.getElementById('accept-call').addEventListener('click', () => {
+                            alert('Call accepted! Hope you have a good excuse ready! 😂');
+                        });
+                    }, 100);
+                }
+            },
+            'auto-screaming': {
+                execute: () => {
+                    const content = document.getElementById('modal-content');
+                    content.innerHTML = `
+                        <div class="text-center p-8">
+                            <div class="text-8xl mb-4" id="scream-face">😱</div>
+                            <h3 class="text-2xl font-bold mb-4">AUTO SCREAMING ACTIVATED!</h3>
+                            <div id="scream-text" class="text-4xl font-bold text-red-600 mb-4">AAAAHHHHHHH!</div>
+                            <p class="text-gray-600 mb-4">This page will scream at random intervals!</p>
+                            <button id="stop-screaming" class="bg-red-500 text-white px-6 py-2 rounded-lg">STOP THE MADNESS!</button>
+                        </div>
+                    `;
+                    
+                    const screams = ['AAAAHHHHHHH!', 'NOOOOOOO!', 'HELP MEEE!', 'WHYYYY!', 'MAKE IT STOP!'];
+                    const faces = ['😱', '😨', '😰', '🙀', '😵'];
+                    let screamInterval;
+                    
+                    const startScreaming = () => {
+                        screamInterval = setInterval(() => {
+                            const randomScream = screams[Math.floor(Math.random() * screams.length)];
+                            const randomFace = faces[Math.floor(Math.random() * faces.length)];
+                            document.getElementById('scream-text').textContent = randomScream;
+                            document.getElementById('scream-face').textContent = randomFace;
+                        }, 2000);
+                    };
+                    
+                    setTimeout(() => {
+                        startScreaming();
+                        document.getElementById('stop-screaming').addEventListener('click', () => {
+                            clearInterval(screamInterval);
+                            document.getElementById('scream-text').textContent = 'Silence... 😌';
+                            document.getElementById('scream-face').textContent = '😌';
+                        });
+                    }, 100);
+                }
+            },
+            'cant-touch-button': {
+                execute: () => {
+                    const content = document.getElementById('modal-content');
+                    content.innerHTML = `
+                        <div class="text-center p-8 relative h-80">
+                            <h3 class="text-2xl font-bold mb-4">Try to Click the Button!</h3>
+                            <p class="text-gray-600 mb-8">Go ahead, I dare you! 😈</p>
+                            <button id="runaway-btn" class="absolute bg-blue-500 text-white px-6 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-110" style="top: 150px; left: 50%; transform: translateX(-50%);">
+                                Can't Touch This! 🏃‍♂️
+                            </button>
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        const btn = document.getElementById('runaway-btn');
+                        const container = btn.parentElement;
+                        
+                        btn.addEventListener('mouseenter', () => {
+                            const maxX = container.clientWidth - btn.clientWidth;
+                            const maxY = container.clientHeight - btn.clientHeight;
+                            const newX = Math.random() * maxX;
+                            const newY = Math.random() * maxY;
+                            
+                            btn.style.left = newX + 'px';
+                            btn.style.top = newY + 'px';
+                            btn.style.transform = 'none';
+                        });
+                        
+                        btn.addEventListener('click', () => {
+                            alert('Wow! You actually caught me! 🎉 Here is your prize: ... Nothing! 😂');
+                        });
+                    }, 100);
+                }
+            },
+            'does-nothing': {
+                execute: () => {
+                    const content = document.getElementById('modal-content');
+                    content.innerHTML = `
+                        <div class="text-center p-8">
+                            <div class="text-8xl mb-4">🚫</div>
+                            <h3 class="text-2xl font-bold mb-4">This Button Does Absolutely Nothing</h3>
+                            <p class="text-gray-600 mb-6">Seriously. It's completely useless. Don't click it.</p>
+                            <button id="useless-btn" class="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold mb-4">
+                                Don't Click Me
+                            </button>
+                            <div id="click-counter" class="text-sm text-gray-500">Clicks: 0</div>
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        let clicks = 0;
+                        const btn = document.getElementById('useless-btn');
+                        const counter = document.getElementById('click-counter');
+                        
+                        btn.addEventListener('click', () => {
+                            clicks++;
+                            counter.textContent = `Clicks: ${clicks}`;
+                            
+                            const messages = [
+                                "I told you it does nothing! 🙄",
+                                "Still clicking? Really? 😒",
+                                "You're persistent, I'll give you that... 🤔",
+                                "This is getting ridiculous... 😑",
+                                "Fine! You win! But it still does nothing! 🏳️"
+                            ];
+                            
+                            if (clicks <= messages.length) {
+                                setTimeout(() => alert(messages[clicks - 1]), 100);
+                            } else if (clicks % 10 === 0) {
+                                setTimeout(() => alert(`${clicks} clicks and counting! You have too much time! 😂`), 100);
+                            }
+                        });
+                    }, 100);
+                }
+            }
+        };
+
+        // Auth State
+        let isLogin = true;
+        let currentUser = null;
+        let currentTool = null;
+
+        // DOM Elements
+        const authScreen = document.getElementById('auth-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const toolModal = document.getElementById('tool-modal');
+
+        // Initialize App
+        function initApp() {
+            setupAuth();
+            renderTools();
+            setupModal();
+        }
+
+        // Auth Functions
+        function setupAuth() {
+            const authForm = document.getElementById('auth-form');
+            const toggleAuth = document.getElementById('toggle-auth');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            authForm.addEventListener('submit', handleAuth);
+            toggleAuth.addEventListener('click', toggleAuthMode);
+            logoutBtn.addEventListener('click', logout);
+        }
+
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            const authTitle = document.getElementById('auth-title');
+            const authSubtitle = document.getElementById('auth-subtitle');
+            const authButton = document.getElementById('auth-button');
+            const toggleAuth = document.getElementById('toggle-auth');
+            const fullnameField = document.getElementById('fullname-field');
+
+            if (isLogin) {
+                authTitle.textContent = 'Welcome Back!';
+                authSubtitle.textContent = 'Log in to access hilarious prank tools';
+                authButton.textContent = 'Log In';
+                toggleAuth.textContent = "Don't have an account? Sign up";
+                fullnameField.classList.add('hidden');
+            } else {
+                authTitle.textContent = 'Join the Fun!';
+                authSubtitle.textContent = 'Create an account to start pranking!';
+                authButton.textContent = 'Sign Up';
+                toggleAuth.textContent = 'Already have an account? Log in';
+                fullnameField.classList.remove('hidden');
+            }
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullname = document.getElementById('fullname').value;
+
+            // Simple validation
+            if (!email || !password) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            if (!isLogin && !fullname) {
+                alert('Please enter your full name!');
+                return;
+            }
+
+            // Simulate authentication
+            currentUser = { email, fullname: fullname || email.split('@')[0] };
+            showMainScreen();
+        }
+
+        function logout() {
+            currentUser = null;
+            authScreen.classList.remove('hidden');
+            mainScreen.classList.add('hidden');
+            toolModal.classList.add('hidden');
+        }
+
+        function showMainScreen() {
+            authScreen.classList.add('hidden');
+            mainScreen.classList.remove('hidden');
+            document.getElementById('user-email').textContent = `Welcome, ${currentUser.email}`;
+        }
+
+        // Tools Functions
+        function renderTools() {
+            const toolsGrid = document.getElementById('tools-grid');
+            
+            funnyTools.forEach((tool, index) => {
+                const toolCard = document.createElement('div');
+                toolCard.className = 'bg-white/20 backdrop-blur-lg rounded-2xl p-6 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 cursor-pointer border border-white/30 hover:border-white/50 animate-fade-in group';
+                toolCard.style.animationDelay = `${index * 0.1}s`;
+                
+                toolCard.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-6xl mb-4 group-hover:animate-bounce">${tool.emoji}</div>
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-yellow-300 transition-colors">${tool.title}</h3>
+                        <p class="text-white/80 text-sm mb-4 leading-relaxed">${tool.description}</p>
+                        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full font-semibold text-sm hover:from-yellow-300 hover:to-orange-400 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                            Try Now! 🚀
+                        </div>
+                    </div>
+                `;
+                
+                toolCard.addEventListener('click', () => openToolModal(tool));
+                toolsGrid.appendChild(toolCard);
+            });
+        }
+
+        // Modal Functions
+        function setupModal() {
+            const closeModal = document.getElementById('close-modal');
+            const activateBtn = document.getElementById('activate-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            closeModal.addEventListener('click', closeToolModal);
+            activateBtn.addEventListener('click', activateTool);
+            resetBtn.addEventListener('click', resetTool);
+
+            // Close modal when clicking outside
+            toolModal.addEventListener('click', (e) => {
+                if (e.target === toolModal) closeToolModal();
+            });
+        }
+
+        function openToolModal(tool) {
+            currentTool = tool;
+            document.getElementById('modal-emoji').textContent = tool.emoji;
+            document.getElementById('modal-title').textContent = tool.title;
+            document.getElementById('modal-description').textContent = tool.description;
+            
+            // Reset modal content
+            document.getElementById('modal-content').innerHTML = `
+                <div class="text-center py-12">
+                    <p class="text-gray-600 mb-4">Click the button below to activate this tool!</p>
+                    <div class="text-6xl">${tool.emoji}</div>
+                </div>
+            `;
+            
+            // Reset buttons
+            document.getElementById('activate-btn').classList.remove('hidden');
+            document.getElementById('reset-btn').classList.add('hidden');
+            document.getElementById('activate-btn').textContent = '🚀 Activate Tool';
+            
+            toolModal.classList.remove('hidden');
+        }
+
+        function closeToolModal() {
+            toolModal.classList.add('hidden');
+            currentTool = null;
+        }
+
+        function activateTool() {
+            if (!currentTool || !toolFunctionality[currentTool.id]) return;
+            
+            toolFunctionality[currentTool.id].execute();
+            
+            document.getElementById('activate-btn').textContent = '✅ Activated!';
+            document.getElementById('activate-btn').classList.add('hidden');
+            document.getElementById('reset-btn').classList.remove('hidden');
+        }
+
+        function resetTool() {
+            if (!currentTool) return;
+            
+            document.getElementById('modal-content').innerHTML = `
+                <div class="text-center py-12">
+                    <p class="text-gray-600 mb-4">Click the button below to activate this tool!</p>
+                    <div class="text-6xl">${currentTool.emoji}</div>
+                </div>
+            `;
+            
+            document.getElementById('activate-btn').classList.remove('hidden');
+            document.getElementById('reset-btn').classList.add('hidden');
+            document.getElementById('activate-btn').textContent = '🚀 Activate Tool';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
